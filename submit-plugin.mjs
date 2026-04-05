@@ -107,25 +107,49 @@ console.log('Plugin entry to be added:');
 console.log(JSON.stringify(pluginEntry, null, '\t'));
 console.log('');
 
+// Cleanup any previous attempt
+console.log('Cleaning up any previous attempts...');
+try {
+	execSync('rm -rf /tmp/obsidian-releases', { stdio: 'ignore' });
+} catch (error) {
+	// Ignore cleanup errors
+}
+
 // Create a new branch and commit
 console.log('Creating branch and committing changes...');
 
 try {
-	// Clone the fork, create branch, commit, and push
-	const commands = [
-		`gh repo clone ${username}/obsidian-releases /tmp/obsidian-releases -- --depth 1`,
-		`cd /tmp/obsidian-releases && git remote add upstream https://github.com/obsidianmd/obsidian-releases.git`,
-		`cd /tmp/obsidian-releases && git fetch upstream master`,
-		`cd /tmp/obsidian-releases && git checkout -b ${branchName} upstream/master`,
-		`cp ${tempFile} /tmp/obsidian-releases/community-plugins.json`,
-		`cd /tmp/obsidian-releases && git add community-plugins.json`,
-		`cd /tmp/obsidian-releases && git commit -m "Add plugin: ${manifest.name}"`,
-		`cd /tmp/obsidian-releases && git push -u origin ${branchName} --force`
-	];
-
-	for (const cmd of commands) {
-		execSync(cmd, { stdio: 'inherit' });
+	// Clone the fork
+	console.log('  Cloning fork...');
+	execSync(`gh repo clone ${username}/obsidian-releases /tmp/obsidian-releases -- --depth 1`, { stdio: 'inherit' });
+	
+	// Add upstream remote (ignore error if it already exists)
+	console.log('  Setting up upstream remote...');
+	try {
+		execSync('cd /tmp/obsidian-releases && git remote add upstream https://github.com/obsidianmd/obsidian-releases.git', { stdio: 'pipe' });
+	} catch (error) {
+		// Remote might already exist, try to set the URL instead
+		execSync('cd /tmp/obsidian-releases && git remote set-url upstream https://github.com/obsidianmd/obsidian-releases.git', { stdio: 'pipe' });
 	}
+	
+	// Fetch upstream and create branch
+	console.log('  Fetching upstream...');
+	execSync('cd /tmp/obsidian-releases && git fetch upstream master', { stdio: 'inherit' });
+	
+	console.log('  Creating branch...');
+	execSync(`cd /tmp/obsidian-releases && git checkout -b ${branchName} upstream/master`, { stdio: 'inherit' });
+	
+	// Copy the updated file
+	console.log('  Copying updated community-plugins.json...');
+	execSync(`cp ${tempFile} /tmp/obsidian-releases/community-plugins.json`, { stdio: 'inherit' });
+	
+	// Commit and push
+	console.log('  Committing changes...');
+	execSync('cd /tmp/obsidian-releases && git add community-plugins.json', { stdio: 'inherit' });
+	execSync(`cd /tmp/obsidian-releases && git commit -m "Add plugin: ${manifest.name}"`, { stdio: 'inherit' });
+	
+	console.log('  Pushing to fork...');
+	execSync(`cd /tmp/obsidian-releases && git push -u origin ${branchName} --force`, { stdio: 'inherit' });
 } catch (error) {
 	console.error('Error during git operations:', error.message);
 	process.exit(1);
