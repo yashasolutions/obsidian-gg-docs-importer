@@ -4,7 +4,7 @@
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
 	"description": "Import public Google Docs as Markdown notes",
-	"author": "Your Name",
+	"author": "yashasolutions",
 	"authorUrl": "",
 	"isDesktopOnly": false
 }
