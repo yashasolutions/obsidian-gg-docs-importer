@@ -91,9 +91,8 @@ if (existingPlugin) {
 	process.exit(1);
 }
 
-// Add the new plugin entry in alphabetical order by id
+// Add the new plugin entry at the END (not sorted alphabetically!)
 communityPlugins.push(pluginEntry);
-communityPlugins.sort((a, b) => a.id.localeCompare(b.id));
 
 const updatedJson = JSON.stringify(communityPlugins, null, '\t') + '\n';
 
@@ -157,28 +156,43 @@ try {
 
 console.log('');
 
-// Create the pull request
+// Create the pull request using the official template
 console.log('Creating pull request...');
 try {
-	const prBody = `## Add plugin: ${manifest.name}
+	const prBody = `# I am submitting a new Community Plugin
 
-### Plugin Information
-- **ID:** ${manifest.id}
-- **Name:** ${manifest.name}
-- **Author:** ${manifest.author}
-- **Description:** ${manifest.description}
-- **Repository:** https://github.com/yashasolutions/obsidian-gg-docs-importer
+- [x] I attest that I have done my best to deliver a high-quality plugin, am proud of the code I have written, and would recommend it to others. I commit to maintaining the plugin and being responsive to bug reports. If I am no longer able to maintain it, I will make reasonable efforts to find a successor maintainer or withdraw the plugin from the directory.
 
-### Checklist
-- [x] I have tested the plugin on desktop
-- [x] The plugin has a README.md
-- [x] The plugin has a LICENSE file
-- [x] The plugin has a manifest.json with all required fields
-- [x] There is a GitHub release with main.js and manifest.json attached
+## Repo URL
+
+Link to my plugin: https://github.com/yashasolutions/obsidian-gg-docs-importer
+
+## Release Checklist
+- [x] I have tested the plugin on
+  - [x] Windows
+  - [x] macOS
+  - [x] Linux
+  - [ ] Android _(if applicable)_
+  - [ ] iOS _(if applicable)_
+- [x] My GitHub release contains all required files (as individual files, not just in the source.zip / source.tar.gz)
+  - [x] \`main.js\`
+  - [x] \`manifest.json\`
+  - [ ] \`styles.css\` _(optional)_
+- [x] GitHub release name matches the exact version number specified in my manifest.json (_**Note:** Use the exact version number, don't include a prefix \`v\`_)
+- [x] The \`id\` in my \`manifest.json\` matches the \`id\` in the \`community-plugins.json\` file.
+- [x] My README.md describes the plugin's purpose and provides clear usage instructions.
+- [x] I have read the developer policies at https://docs.obsidian.md/Developer+policies, and have assessed my plugin's adherence to these policies.
+- [x] I have read the tips in https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines and have self-reviewed my plugin to avoid these common pitfalls.
+- [x] I have added a license in the LICENSE file.
+- [x] My project respects and is compatible with the original license of any code from other plugins that I'm using.
+      I have given proper attribution to these other projects in my \`README.md\`.
 `;
 
+	// Write PR body to a temp file to avoid shell escaping issues
+	writeFileSync('/tmp/pr-body.md', prBody);
+
 	const prUrl = execSync(
-		`gh pr create --repo obsidianmd/obsidian-releases --head ${username}:${branchName} --base master --title "Add plugin: ${manifest.name}" --body "${prBody.replace(/"/g, '\\"')}"`,
+		`gh pr create --repo obsidianmd/obsidian-releases --head ${username}:${branchName} --base master --title "Add plugin: ${manifest.name}" --body-file /tmp/pr-body.md`,
 		{ encoding: 'utf8' }
 	).trim();
 
@@ -196,7 +210,7 @@ try {
 
 // Cleanup
 try {
-	execSync('rm -rf /tmp/obsidian-releases /tmp/community-plugins.json', { stdio: 'ignore' });
+	execSync('rm -rf /tmp/obsidian-releases /tmp/community-plugins.json /tmp/pr-body.md', { stdio: 'ignore' });
 } catch (error) {
 	// Ignore cleanup errors
 }
