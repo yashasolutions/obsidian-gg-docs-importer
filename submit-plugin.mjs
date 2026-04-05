@@ -9,7 +9,7 @@ const pluginEntry = {
 	name: manifest.name,
 	author: manifest.author,
 	description: manifest.description,
-	repo: "yashasolutions/google-doc-importer"
+	repo: "yashasolutions/obsidian-gg-docs-importer"
 };
 
 // Check if gh CLI is installed
@@ -40,7 +40,7 @@ console.log('Checking prerequisites...');
 
 // Check if release exists
 try {
-	const releases = execSync('gh release list --repo yashasolutions/google-doc-importer --limit 1', { encoding: 'utf8' });
+	const releases = execSync('gh release list --repo yashasolutions/obsidian-gg-docs-importer --limit 1', { encoding: 'utf8' });
 	if (!releases.trim()) {
 		console.error('Error: No releases found. Create a release first with:');
 		console.error('  git tag 1.0.0 && git push origin 1.0.0');
@@ -143,7 +143,7 @@ try {
 - **Name:** ${manifest.name}
 - **Author:** ${manifest.author}
 - **Description:** ${manifest.description}
-- **Repository:** https://github.com/yashasolutions/google-doc-importer
+- **Repository:** https://github.com/yashasolutions/obsidian-gg-docs-importer
 
 ### Checklist
 - [x] I have tested the plugin on desktop

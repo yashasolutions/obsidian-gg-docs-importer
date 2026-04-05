@@ -20,7 +20,7 @@ An Obsidian plugin that imports public Google Docs as Markdown notes.
 
 ### Manual Installation
 
-1. Go to the [Releases](https://github.com/yashasolutions/google-doc-importer/releases) page
+1. Go to the [Releases](https://github.com/yashasolutions/obsidian-gg-docs-importer/releases) page
 2. Download `main.js` and `manifest.json` from the latest release
 3. Create a folder called `google-doc-importer` in your vault's `.obsidian/plugins/` directory
 4. Copy the downloaded files into that folder
