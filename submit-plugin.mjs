@@ -178,7 +178,7 @@ try {
 `;
 
 	const prUrl = execSync(
-		`cd /tmp/obsidian-releases && gh pr create --repo obsidianmd/obsidian-releases --title "Add plugin: ${manifest.name}" --body "${prBody.replace(/"/g, '\\"')}"`,
+		`gh pr create --repo obsidianmd/obsidian-releases --head ${username}:${branchName} --base master --title "Add plugin: ${manifest.name}" --body "${prBody.replace(/"/g, '\\"')}"`,
 		{ encoding: 'utf8' }
 	).trim();
 
